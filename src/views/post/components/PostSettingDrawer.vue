@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    title="文章设置"
+    title="设备设置"
     :width="isMobile() ? '100%' : '480'"
     placement="right"
     closable
@@ -14,10 +14,10 @@
         <h3 class="post-setting-drawer-title">基本设置</h3>
         <div class="post-setting-drawer-item">
           <a-form layout="vertical">
-            <a-form-item label="文章标题：" v-if="needTitle">
+            <a-form-item label="设备名称：" v-if="needTitle">
               <a-input v-model="selectedPost.title" />
             </a-form-item>
-            <a-form-item label="文章别名：" :help="fullPath">
+            <a-form-item label="设备别名：" :help="fullPath">
               <a-input v-model="selectedPost.slug" />
             </a-form-item>
 
@@ -26,7 +26,7 @@
                 showTime
                 :defaultValue="pickerDefaultValue"
                 format="YYYY-MM-DD HH:mm:ss"
-                placeholder="选择文章发表时间"
+                placeholder="选择设备发表时间"
                 @change="onPostDateChange"
                 @ok="onPostDateOk"
               />
@@ -449,7 +449,7 @@ export default {
       if (!this.selectedPost.title) {
         this.$notification['error']({
           message: '提示',
-          description: '文章标题不能为空！'
+          description: '设备名称不能为空！'
         })
         return
       }
@@ -459,6 +459,8 @@ export default {
       this.selectedPost.tagIds = this.selectedTagIds
       // Set post metas
       this.selectedPost.metas = this.selectedMetas
+
+      console.log(this.selectedPost)
       if (this.selectedPost.status === 'DRAFT') {
         this.draftSaving = true
       } else {
@@ -479,7 +481,7 @@ export default {
             setTimeout(() => {
               this.saving = false
               this.draftSaving = false
-            }, 400)
+            }, 200)
           })
       } else {
         // Create the post

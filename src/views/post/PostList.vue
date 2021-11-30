@@ -10,8 +10,8 @@
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="24">
-              <a-form-item label="文章状态：">
-                <a-select v-model="queryParam.status" placeholder="请选择文章状态" @change="handleQuery()" allowClear>
+              <a-form-item label="状态：">
+                <a-select v-model="queryParam.status" placeholder="请选择元件状态" @change="handleQuery()" allowClear>
                   <a-select-option v-for="status in Object.keys(postStatus)" :key="status" :value="status">{{
                     postStatus[status].text
                   }}</a-select-option>
@@ -39,6 +39,7 @@
                 <a-space>
                   <a-button type="primary" @click="handleQuery()">查询</a-button>
                   <a-button @click="handleResetParam()">重置</a-button>
+                  <a-button @click="printPost()">打印</a-button>
                 </a-space>
               </span>
             </a-col>
@@ -48,7 +49,7 @@
 
       <div class="table-operator">
         <router-link :to="{ name: 'PostWrite' }">
-          <a-button type="primary" icon="plus">写文章</a-button>
+          <a-button type="primary" icon="plus">编辑设备</a-button>
         </router-link>
         <a-dropdown v-show="queryParam.status != null && queryParam.status !== '' && !isMobile()">
           <a-menu slot="overlay">
@@ -121,7 +122,7 @@
                   </a-menu-item>
                   <a-menu-item v-else-if="item.status === 'RECYCLE'">
                     <a-popconfirm
-                      :title="'你确定要发布【' + item.title + '】文章？'"
+                      :title="'你确定要发布【' + item.title + '】设备？'"
                       @confirm="handleEditStatusClick(item.id, 'PUBLISHED')"
                       okText="确定"
                       cancelText="取消"
@@ -133,7 +134,7 @@
                     v-if="item.status === 'PUBLISHED' || item.status === 'DRAFT' || item.status === 'INTIMATE'"
                   >
                     <a-popconfirm
-                      :title="'你确定要将【' + item.title + '】文章移到回收站？'"
+                      :title="'你确定要将【' + item.title + '】设备移到回收站？'"
                       @confirm="handleEditStatusClick(item.id, 'RECYCLE')"
                       okText="确定"
                       cancelText="取消"
@@ -143,7 +144,7 @@
                   </a-menu-item>
                   <a-menu-item v-else-if="item.status === 'RECYCLE'">
                     <a-popconfirm
-                      :title="'你确定要永久删除【' + item.title + '】文章？'"
+                      :title="'你确定要永久删除【' + item.title + '】设备？'"
                       @confirm="handleDeleteClick(item.id)"
                       okText="确定"
                       cancelText="取消"
@@ -222,15 +223,16 @@
           </a-list-item>
         </a-list>
 
-        <!-- Desktop -->
-        <a-table
-          v-else
-          :rowKey="post => post.id"
-          :rowSelection="{
+        <!-- Desktop :rowSelection="{
             selectedRowKeys: selectedRowKeys,
             onChange: onSelectionChange,
             getCheckboxProps: getCheckboxProps
-          }"
+          }"-->
+        <a-table
+          ref="print"
+          v-else
+          :rowKey="post => post.id"
+          bordered
           :columns="columns"
           :dataSource="formattedPosts"
           :loading="postsLoading"
@@ -318,7 +320,7 @@
             </a-tooltip>
           </span>
 
-          <span slot="action" slot-scope="text, post">
+          <span class="no-print" slot="action" slot-scope="text, post">
             <a
               href="javascript:void(0);"
               @click="handleEditClick(post)"
@@ -417,7 +419,6 @@ const columns = [
   {
     title: '标题',
     dataIndex: 'title',
-    width: '150px',
     ellipsis: true,
     scopedSlots: { customRender: 'postTitle' }
   },
@@ -425,28 +426,54 @@ const columns = [
     title: '状态',
     className: 'status',
     dataIndex: 'statusProperty',
-    width: '100px',
     scopedSlots: { customRender: 'status' }
   },
   {
-    title: '分类',
+    title: '类别',
     dataIndex: 'categories',
     scopedSlots: { customRender: 'categories' }
   },
   {
-    title: '标签',
-    dataIndex: 'tags',
-    scopedSlots: { customRender: 'tags' }
+    title: '规格',
+    dataIndex: 'norms',
+    key: 'norms'
+  },
+  {
+    title: '型号',
+    dataIndex: 'deviceType',
+    key: 'deviceType'
+  },
+  {
+    title: '单价',
+    key: 'price',
+    dataIndex: 'price'
+  },
+  {
+    title: '入库数量',
+    key: 'stock',
+    dataIndex: 'stock'
+  },
+  {
+    title: '库存位置',
+    key: 'deviceNum',
+    dataIndex: 'deviceNum'
+  },
+  {
+    title: '入库人员',
+    key: 'importPeople',
+    dataIndex: 'importPeople'
   },
   {
     title: '评论',
     width: '70px',
+    class: 'no-print',
     dataIndex: 'commentCount',
     scopedSlots: { customRender: 'commentCount' }
   },
   {
     title: '访问',
     width: '70px',
+    class: 'no-print',
     dataIndex: 'visits',
     scopedSlots: { customRender: 'visits' }
   },
@@ -459,6 +486,7 @@ const columns = [
   {
     title: '操作',
     width: '180px',
+    class: 'no-print',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -559,6 +587,9 @@ export default {
     }
   },
   methods: {
+    printPost() {
+      this.$print(this.$refs.print)
+    },
     handleListPosts(enableLoading = true) {
       if (enableLoading) {
         this.postsLoading = true
@@ -571,6 +602,7 @@ export default {
         .query(this.queryParam)
         .then(response => {
           this.posts = response.data.data.content
+          console.log(this.posts)
           this.pagination.total = response.data.data.total
         })
         .finally(() => {

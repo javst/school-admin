@@ -3,7 +3,7 @@
     <div class="copyright" style="color: rgba(0, 0, 0, 0.45);font-size: 14px;">
       Proudly power by
       <router-link :to="{ name: 'About' }">
-        Halo
+        wsw
       </router-link>
     </div>
   </div>

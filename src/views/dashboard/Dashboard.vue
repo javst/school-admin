@@ -2,7 +2,7 @@
   <page-view>
     <a-row :gutter="12">
       <a-col :xl="6" :lg="6" :md="12" :sm="12" :xs="12" class="mb-3">
-        <analysis-card title="文章" :number="statisticsData.postCount">
+        <analysis-card title="设备" :number="statisticsData.postCount">
           <router-link :to="{ name: 'PostWrite' }" slot="action">
             <a-icon v-if="statisticsLoading" type="loading" />
             <a-icon v-else type="plus" />
@@ -20,7 +20,7 @@
       <a-col :xl="6" :lg="6" :md="12" :sm="12" :xs="12" class="mb-3">
         <analysis-card title="阅读量" :number="statisticsData.visitCount">
           <a-tooltip slot="action">
-            <template slot="title"> 文章阅读共 {{ statisticsData.visitCount }} 次 </template>
+            <template slot="title"> 设备查看共 {{ statisticsData.visitCount }} 次 </template>
             <a href="javascript:void(0);">
               <a-icon v-if="statisticsLoading" type="loading" />
               <a-icon v-else type="info-circle-o" />
@@ -31,7 +31,7 @@
       <a-col :xl="6" :lg="6" :md="12" :sm="12" :xs="12" class="mb-3">
         <analysis-card title="建立天数" :number="statisticsData.establishDays">
           <a-tooltip slot="action">
-            <template slot="title">博客建立于 {{ statisticsData.birthday | moment }}</template>
+            <template slot="title">系统建立于 {{ statisticsData.birthday | moment }}</template>
             <a href="javascript:void(0);">
               <a-icon v-if="statisticsLoading" type="loading" />
               <a-icon v-else type="info-circle-o" />
@@ -42,10 +42,10 @@
     </a-row>
     <a-row :gutter="12">
       <a-col :xl="8" :lg="8" :md="12" :sm="24" :xs="24" class="mb-3">
-        <a-card :bordered="false" title="新动态" :bodyStyle="{ padding: 0 }">
+        <a-card :bordered="false" title="新设备" :bodyStyle="{ padding: 0 }">
           <div class="card-container">
             <a-tabs type="card">
-              <a-tab-pane key="1" tab="最近文章">
+              <a-tab-pane key="1" tab="最近发布设备">
                 <a-list :loading="activityLoading" :dataSource="latestPosts">
                   <a-list-item slot="renderItem" slot-scope="item, index" :key="index">
                     <a-list-item-meta>
@@ -74,7 +74,7 @@
               <a-tab-pane key="2" tab="最近评论">
                 <div class="custom-tab-wrapper">
                   <a-tabs :animated="{ inkBar: true, tabPane: false }">
-                    <a-tab-pane tab="文章" key="1">
+                    <a-tab-pane tab="设备" key="1">
                       <recent-comment-tab type="posts"></recent-comment-tab>
                     </a-tab-pane>
                     <a-tab-pane tab="页面" key="2">

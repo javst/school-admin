@@ -7,7 +7,7 @@
       <a-form-model-item label="关键词：" prop="seo_keywords">
         <a-input v-model="options.seo_keywords" placeholder="多个关键词以英文状态下的逗号隔开" />
       </a-form-model-item>
-      <a-form-model-item label="博客描述：" prop="seo_description">
+      <a-form-model-item label="描述：" prop="seo_description">
         <a-input type="textarea" :autoSize="{ minRows: 5 }" v-model="options.seo_description" />
       </a-form-model-item>
       <a-form-model-item>

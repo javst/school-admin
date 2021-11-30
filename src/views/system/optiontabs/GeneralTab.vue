@@ -1,10 +1,10 @@
 <template>
   <div>
     <a-form-model ref="generalOptionsForm" :model="options" :rules="rules" layout="vertical" :wrapperCol="wrapperCol">
-      <a-form-model-item label="博客标题：" prop="blog_title">
+      <a-form-model-item label="系统标题：" prop="blog_title">
         <a-input v-model="options.blog_title" />
       </a-form-model-item>
-      <a-form-model-item label="博客地址：" prop="blog_url">
+      <a-form-model-item label="系统地址：" prop="blog_url">
         <a-input v-model="options.blog_url" placeholder="如：https://halo.run" />
       </a-form-model-item>
       <a-form-model-item label="Logo：" prop="blog_logo">
@@ -82,11 +82,11 @@ export default {
       },
       rules: {
         blog_title: [
-          { required: true, message: '* 博客标题不能为空', trigger: ['change'] },
+          { required: true, message: '* 系统标题不能为空', trigger: ['change'] },
           { max: 1023, message: '* 字符数不能超过 1023', trigger: ['change'] }
         ],
         blog_url: [
-          { required: true, message: '* 博客地址不能为空', trigger: ['change'] },
+          { required: true, message: '* 系统地址不能为空', trigger: ['change'] },
           { max: 1023, message: '* 字符数不能超过 1023', trigger: ['change'] }
         ],
         blog_logo: [{ max: 1023, message: '* 字符数不能超过 1023', trigger: ['change'] }],

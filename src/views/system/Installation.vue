@@ -10,7 +10,11 @@
                 <small>安装向导</small>
               </span>
             </div>
-            <a-alert :message="`欢迎使用 Halo，您正在安装的是 Halo ${VERSION}。`" type="success" show-icon />
+            <a-alert
+              :message="`欢迎使用 wcool阜阳师范大学仓库系统，您正在安装的是  ${VERSION}版本。`"
+              type="success"
+              show-icon
+            />
             <!-- Blogger info -->
             <div class="mt-5 mb-5">
               <a-radio-group v-model="installationMode">
@@ -62,12 +66,12 @@
                 站点信息
               </a-divider>
               <a-form-model-item prop="url">
-                <a-input v-model="form.model.url" placeholder="博客地址">
+                <a-input v-model="form.model.url" placeholder="系统地址">
                   <a-icon slot="prefix" type="link" style="color: rgba(0,0,0,.25)" />
                 </a-input>
               </a-form-model-item>
               <a-form-model-item prop="title">
-                <a-input v-model="form.model.title" placeholder="博客标题">
+                <a-input v-model="form.model.title" placeholder="系统标题">
                   <a-icon slot="prefix" type="book" style="color: rgba(0,0,0,.25)" />
                 </a-input>
               </a-form-model-item>
@@ -79,7 +83,7 @@
                 ref="upload"
                 name="file"
                 :accepts="['application/json']"
-                label="拖拽或点击选择数据文件<br>请确认是否为 Halo 后台导出的文件。"
+                label="拖拽或点击选择数据文件<br>请确认是否为 系统 后台导出的文件。"
                 :multiple="false"
                 :uploadHandler="onImportUpload"
               ></FilePondUpload>

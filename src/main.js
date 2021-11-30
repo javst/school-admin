@@ -4,7 +4,9 @@ import router from './router'
 import Contextmenu from 'vue-contextmenujs'
 import store from './store/'
 import './logger'
-
+import Print from '@/utils/print'
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
 import '@/styles/tailwind.css'
 import './core/lazy_use'
 import '@/router/guard/'
@@ -15,6 +17,8 @@ import { version } from '../package.json'
 Vue.config.productionTip = false
 Vue.prototype.VERSION = version
 
+Vue.use(Antd)
+Vue.use(Print)
 Vue.use(router)
 Vue.use(Contextmenu)
 

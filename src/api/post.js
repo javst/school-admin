@@ -29,6 +29,17 @@ postApi.get = postId => {
   })
 }
 
+postApi.inStock = (categories, inStock) => {
+  return service({
+    url: baseUrl + '/inStock',
+    method: 'post',
+    data: inStock,
+    params: {
+      categories: categories
+    }
+  })
+}
+
 postApi.create = (postToCreate, autoSave) => {
   return service({
     url: baseUrl,

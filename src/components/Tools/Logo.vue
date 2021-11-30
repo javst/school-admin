@@ -1,8 +1,8 @@
 <template>
   <div class="logo">
     <a href="javascript:void(0);" @click="onLogoClick()">
-      <h1 class="logo-title">Halo</h1>
-      <h1 class="logo-sub-title" style="padding-left: 10px;">Dashboard</h1>
+      <h1 class="logo-title">阜阳师范大学</h1>
+      <h1 class="logo-sub-title" style="padding-left: 10px;">wcool</h1>
     </a>
   </div>
 </template>

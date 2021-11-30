@@ -1,5 +1,5 @@
 <template>
-  <page-view :title="postToStage.title ? postToStage.title : '新文章'" affix>
+  <page-view :title="postToStage.title ? postToStage.title : '新设备'" affix>
     <template slot="extra">
       <a-space>
         <ReactiveButton
@@ -20,8 +20,18 @@
     <a-row :gutter="12">
       <a-col :span="24">
         <div class="mb-4">
-          <a-input v-model="postToStage.title" placeholder="请输入文章标题" size="large" />
+          <a-input v-model="postToStage.title" placeholder="请输入设备名称" size="large" />
         </div>
+
+        <div>
+          <div style="float:left;">
+            <a-input prefix="￥" v-model="postToStage.price" suffix="RMB" />
+          </div>
+          <div style="float:left;padding-left:20px;">
+            <a-input prefix="" v-model="postToStage.stock" suffix="库存" />
+          </div>
+        </div>
+        <div style="clear: both;margin-bottom: 10px"></div>
         <div id="editor" :style="{ height: editorHeight }">
           <MarkdownEditor
             :originalContent="postToStage.originalContent"
@@ -204,6 +214,7 @@ export default {
       if (!this.postToStage.title) {
         this.postToStage.title = datetimeFormat(new Date(), 'YYYY-MM-DD-HH-mm-ss')
       }
+      console.log(this.postToStage)
       this.previewSaving = true
       if (this.postToStage.id) {
         // Update the post

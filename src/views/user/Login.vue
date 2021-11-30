@@ -2,7 +2,7 @@
   <div class="container-wrapper">
     <div class="halo-logo animated fadeInUp">
       <span
-        >Halo
+        >阜阳师范大学
         <small v-if="apiForm.visible">API 设置</small>
       </span>
     </div>
