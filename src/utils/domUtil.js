@@ -16,4 +16,4 @@ export const setDocumentTitle = function(title) {
   }
 }
 
-export const domTitle = 'Halo Dashboard'
+export const domTitle = '阜阳师范大学计算机与信息工程学院实验室'

@@ -39,6 +39,13 @@ postApi.inStock = (categories, inStock) => {
     }
   })
 }
+postApi.inStockAll = inStock => {
+  return service({
+    url: baseUrl + '/inStockAll',
+    method: 'post',
+    data: inStock
+  })
+}
 
 postApi.create = (postToCreate, autoSave) => {
   return service({

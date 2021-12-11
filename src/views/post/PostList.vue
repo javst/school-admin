@@ -417,6 +417,11 @@ import postApi from '@/api/post'
 
 const columns = [
   {
+    title: '编号',
+    key: 'deviceNum',
+    dataIndex: 'deviceNum'
+  },
+  {
     title: '标题',
     dataIndex: 'title',
     ellipsis: true,

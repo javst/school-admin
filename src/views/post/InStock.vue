@@ -9,7 +9,7 @@
           <a-input v-model="inStock.norms" prefix="" suffix="规格" />
         </a-col>
         <a-col :span="3" style="float:left;padding-left:20px;">
-          <a-input v-model="inStock.deviceType" prefix="" suffix="型号" />
+          <a-input v-model="inStock.deviceType" prefix="" suffix="单位" />
         </a-col>
 
         <a-col :span="3" style="float:left;;padding-left:20px;">
@@ -73,7 +73,7 @@ const columns = [
     key: 'norms'
   },
   {
-    title: '型号',
+    title: '单位',
     dataIndex: 'deviceType',
     key: 'deviceType'
   },
@@ -106,6 +106,7 @@ export default {
     return {
       inStock: {},
       inStockList: [],
+      inStockListUp: [],
       columns,
       headers: {
         authorization: 'authorization-text'
@@ -115,6 +116,9 @@ export default {
   methods: {
     printInStock() {
       this.$print(this.$refs.print)
+    },
+    timer() {
+      setTimeout(1000)
     },
     importExcel() {
       // if (info.file.status !== 'uploading') {
@@ -132,14 +136,11 @@ export default {
 
       let obj = document.getElementById('imFile')
       if (!obj.files) return
-
       var f = obj.files[0]
       let reader = await uploadExcel(f)
       const worker = xlsx.read(reader, { type: 'binary' })
-      console.log(worker)
       reader = xlsx.utils.sheet_to_json(worker.Sheets[worker.SheetNames[0]])
-      console.log(reader)
-      reader.forEach(item => {
+      for (const item of reader) {
         let stock = {}
         for (let key in item) {
           let text = item[key]
@@ -151,7 +152,7 @@ export default {
             case '规格':
               k = 'norms'
               break
-            case '型号':
+            case '单位':
               k = 'deviceType'
               break
             case '单价':
@@ -172,35 +173,28 @@ export default {
           }
           stock[k] = text
         }
-        console.log(stock)
         this.inStock = stock
-        this.importStock()
-        this.inStock = null
+        this.handleSetPinyinSlug()
+        stock = this.inStock
+        if (stock['categoryCreate'] == null) {
+          stock['categoryCreate'] = '默认分类'
+        }
+        stock['categorySlug'] = this.setPinyinSlug(stock['categoryCreate'])
+        let parse = JSON.parse(JSON.stringify(stock))
+        this.inStockListUp.push(parse)
         obj.file = null
+      }
+      this.inStockList = this.inStockListUp
+      this.$message.success('入库成功', 5)
+      postApi.inStockAll(this.inStockListUp).then(respone => {
+        console.log(respone)
+        if (respone.data == 1) {
+          this.$message.success('入库成功', 5)
+        } else {
+          this.$message.error('入库失败', 5)
+        }
       })
-      // var reader = new FileReader()
-      //
-      // let $t = this
-      // reader.onload = function (e) {
-      //   var data = e.target.result
-      //   if ($t.rABS) {
-      //     $t.wb = xlsx.read(btoa(this.fixdata(data)), {  // 手动转化
-      //       type: 'base64'
-      //     })
-      //   } else {
-      //     $t.wb = xlsx.read(data, {
-      //       type: 'binary'
-      //     })
-      //   }
-      //   let json = xlsx.utils.sheet_to_json($t.wb.Sheets[$t.wb.SheetNames[0]])
-      //   console.log(typeof json)
-      //   $t.dealFile($t.analyzeData(json)) // analyzeData: 解析导入数据
-      // }
-      // if (this.rABS) {
-      //   reader.readAsArrayBuffer(f)
-      // } else {
-      //   reader.readAsBinaryString(f)
-      // }
+      console.log(this.inStockListUp)
     },
     importStock() {
       this.handleSetPinyinSlug()
@@ -215,6 +209,24 @@ export default {
       })
       let parse = JSON.parse(JSON.stringify(this.inStock))
       this.inStockList.push(parse)
+      return 1
+    },
+    setPinyinSlug(string) {
+      if (pinyin.isSupported()) {
+        let result = ''
+        const tokens = pinyin.parse(string)
+        let lastToken
+        tokens.forEach(token => {
+          if (token.type === 2) {
+            const target = token.target ? token.target.toLowerCase() : ''
+            result += result && !/\n|\s/.test(lastToken.target) ? '-' + target : target
+          } else {
+            result += (lastToken && lastToken.type === 2 ? '-' : '') + token.target
+          }
+          lastToken = token
+        })
+        return result
+      }
     },
     handleSetPinyinSlug() {
       if (this.inStock.title && this.inStock.title !== '' && !this.inStock.id) {

@@ -179,6 +179,24 @@ export const asyncRouterMap = [
             name: 'order',
             component: () => import('@/views/report/Order'),
             meta: { title: '订单报表', hiddenHeaderContent: false }
+          },
+          {
+            path: '/report/InStock.vue',
+            name: 'inStock',
+            component: () => import('@/views/report/InStock'),
+            meta: { title: '入库报表', hiddenHeaderContent: false }
+          },
+          {
+            path: '/report/s.vue',
+            name: 'InStockList',
+            component: () => import('@/views/report/InStockList'),
+            meta: { title: '库存报表', hiddenHeaderContent: false }
+          },
+          {
+            path: '/report/Apply.vue',
+            name: 'apply',
+            component: () => import('@/views/report/Apply'),
+            meta: { title: '竞赛申购', hiddenHeaderContent: false }
           }
         ]
       },
