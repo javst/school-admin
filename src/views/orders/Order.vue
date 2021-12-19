@@ -59,11 +59,20 @@
         <span class="no-print" slot="action" slot-scope="text, record">
           <a v-if="record.state == 0" @click="passOrder(record, 1)">通过</a>
           <a-divider v-if="record.state == 0" type="vertical" />
-          <a v-if="record.state == 0" @click="passOrder(record, 2)">拒绝</a>
+          <a v-if="record.state == 0" @click="showModal(record, 2)">拒绝</a>
           <a-divider v-if="record.state == 0" type="vertical" />
           <a @click="deleteOrder(record)">删除</a>
         </span>
       </a-table>
+      <a-modal
+        title="请输入审核意见"
+        :visible="visible"
+        :confirm-loading="confirmLoading"
+        @ok="refuseOrder(order, orderState, advice)"
+        @cancel="handleCancel"
+      >
+        <a-input v-model="advice" />
+      </a-modal>
       <div class="page-wrapper">
         <a-pagination
           v-model="current"
@@ -175,7 +184,11 @@ export default {
         size: null,
         open: true
       },
-      postsLoading: false
+      postsLoading: false,
+      order: null,
+      orderState: null,
+      visible: false,
+      advice: null
     }
   },
   mounted() {
@@ -187,6 +200,14 @@ export default {
     })
   },
   methods: {
+    showModal(order, state) {
+      this.order = order
+      this.orderState = state
+      this.visible = true
+    },
+    handleCancel() {
+      this.visible = false
+    },
     printOrder() {
       this.$print(this.$refs.print)
     },
@@ -259,6 +280,20 @@ export default {
           this.$message.error('操作失败')
         }
       })
+    },
+    refuseOrder(order, orderState, advice) {
+      let message = orderState == 1 ? '订单审核通过' : '订单审核不通过'
+      this.$message.loading({ content: 'Loading...' })
+      console.log(order)
+      orderApi.refuseOrder(order.id, orderState, advice).then(response => {
+        if (response.data > 0) {
+          this.$message.success(message, 5)
+          order.state = orderState
+        } else {
+          this.$message.error('操作失败')
+        }
+      })
+      this.visible = false
     },
     deleteOrder(order) {
       this.$message.loading({ content: 'Loading...' })

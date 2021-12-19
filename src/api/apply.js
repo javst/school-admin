@@ -36,5 +36,32 @@ applyApi.queryOrder = (username, datetime) => {
     }
   })
 }
+applyApi.passApply = (id, state) => {
+  return service({
+    url: `${baseUrl}/passApply`,
+    method: 'post',
+    data: { id: id },
+    params: {
+      id: id,
+      state: state
+    }
+  })
+}
+applyApi.refuseApply = (id, state, advice) => {
+  return service({
+    url: `${baseUrl}/refuseApply`,
+    method: 'post',
+    data: {
+      id: id,
+      state: state,
+      advice: advice
+    },
+    params: {
+      id: id,
+      state: state,
+      advice: advice
+    }
+  })
+}
 
 export default applyApi

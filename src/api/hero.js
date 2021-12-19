@@ -1,11 +1,11 @@
 import service from '@/utils/service'
 import postApi from '@/api/post'
 
-const baseUrl = '/api/admin/orders'
+const baseUrl = '/api/admin/hero'
 
-const orderApi = {}
+const heroApi = {}
 
-orderApi.getLatest = (start, top) => {
+heroApi.getLatest = (start, top) => {
   return service({
     url: `${baseUrl}/latest`,
     params: {
@@ -15,9 +15,9 @@ orderApi.getLatest = (start, top) => {
     method: 'get'
   })
 }
-orderApi.passOrder = (id, state) => {
+heroApi.passHero = (id, state) => {
   return service({
-    url: `${baseUrl}/passOrder`,
+    url: `${baseUrl}/passHero`,
     method: 'post',
     data: { id: id },
     params: {
@@ -26,9 +26,9 @@ orderApi.passOrder = (id, state) => {
     }
   })
 }
-orderApi.refuseOrder = (id, state, advice) => {
+heroApi.refuseHero = (id, state, advice) => {
   return service({
-    url: `${baseUrl}/refuseOrder`,
+    url: `${baseUrl}/refuseHero`,
     method: 'post',
     data: {
       id: id,
@@ -42,9 +42,9 @@ orderApi.refuseOrder = (id, state, advice) => {
     }
   })
 }
-orderApi.deleteOrder = id => {
+heroApi.deleteHero = id => {
   return service({
-    url: `${baseUrl}/deleteOrder`,
+    url: `${baseUrl}/deleteHero`,
     method: 'post',
     data: { id: id },
     params: {
@@ -53,16 +53,16 @@ orderApi.deleteOrder = id => {
   })
 }
 
-orderApi.countOrder = () => {
+heroApi.countHero = () => {
   return service({
-    url: `${baseUrl}/countOrder`,
+    url: `${baseUrl}/countHero`,
     method: 'post'
   })
 }
 
-orderApi.queryOrder = (username, state, datetime) => {
+heroApi.queryHero = (username, state, datetime) => {
   return service({
-    url: `${baseUrl}/queryOrder`,
+    url: `${baseUrl}/queryHero`,
     method: 'post',
     data: {
       username: username,
@@ -88,4 +88,4 @@ postApi.update = (orderId, orderToUpdate, autoSave) => {
   })
 }
 
-export default orderApi
+export default heroApi

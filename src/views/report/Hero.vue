@@ -10,6 +10,16 @@
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="24">
+              <a-form-item label="订单状态：">
+                <a-select v-model="queryParam.state" placeholder="请选择订单状态" allowClear>
+                  <a-select-option :value="-1">请选择</a-select-option>
+                  <a-select-option :value="0">未审核</a-select-option>
+                  <a-select-option :value="1">已通过</a-select-option>
+                  <a-select-option :value="2">未通过</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="24">
               <a-form-item label="申请日期：">
                 <div>
                   <a-date-picker v-model="queryParam.datetime" @change="onChange" />
@@ -41,33 +51,24 @@
       >
         <a slot="username" slot-scope="text">{{ text }}</a>
         <span slot="username"><a-icon type="smile-o" /> 姓名</span>
-        <a-col :md="6" :sm="24">
-          <a-form-item label="订单状态：">
-            <a-select v-model="queryParam.state" placeholder="请选择订单状态" allowClear>
-              <a-select-option :value="-1">请选择</a-select-option>
-              <a-select-option :value="0">未审核</a-select-option>
-              <a-select-option :value="1">已通过</a-select-option>
-              <a-select-option :value="2">未通过</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
         <span slot="states" slot-scope="state">
           <a-tag :color="state == 0 ? 'volcano' : state == 1 ? 'green' : 'geekblue'">
             {{ state == 0 ? '待审核' : state == 1 ? '已通过' : '未通过' }}
           </a-tag>
         </span>
-        <a slot="links" :href="text" slot-scope="text" target="_blank">点击跳转</a>
         <span class="no-print" slot="action" slot-scope="text, record">
           <a v-if="record.state == 0" @click="passOrder(record, 1)">通过</a>
           <a-divider v-if="record.state == 0" type="vertical" />
           <a v-if="record.state == 0" @click="showModal(record, 2)">拒绝</a>
+          <a-divider v-if="record.state == 0" type="vertical" />
+          <a @click="deleteOrder(record)">删除</a>
         </span>
       </a-table>
       <a-modal
         title="请输入审核意见"
         :visible="visible"
         :confirm-loading="confirmLoading"
-        @ok="refuseApply(apply, applyState, advice)"
+        @ok="refuseOrder(order, orderState, advice)"
         @cancel="handleCancel"
       >
         <a-input v-model="advice" />
@@ -100,7 +101,7 @@
 
 <script>
 import PageView from '@/layouts/PageView'
-import applyApi from '@/api/apply'
+import heroApi from '@/api/hero'
 import { datetimeFormat } from '@/utils/datetime'
 
 const columns = [
@@ -111,39 +112,26 @@ const columns = [
     slots: { title: 'username' },
     scopedSlots: { customRender: 'username' }
   },
-
   {
-    title: '设备名称',
+    title: '证书名',
     dataIndex: 'title',
     key: 'title'
   },
   {
-    title: '元件型号',
-    dataIndex: 'norm',
-    key: 'norm'
-  },
-  {
-    title: '购买链接',
-    dataIndex: 'link',
-    key: 'link',
-    scopedSlots: { customRender: 'links' }
-  },
-  {
-    title: '数量',
-    key: 'number',
-    dataIndex: 'number'
-  },
-
-  {
-    title: '申请时间',
-    key: 'createTime',
-    dataIndex: 'createTime'
+    title: '申请额度',
+    dataIndex: 'money',
+    key: 'money'
   },
   {
     title: '状态',
     key: 'state',
     dataIndex: 'state',
     scopedSlots: { customRender: 'states' }
+  },
+  {
+    title: '申请时间',
+    key: 'createTime',
+    dataIndex: 'createTime'
   },
   {
     title: '操作',
@@ -157,9 +145,6 @@ export default {
   components: { PageView },
   data() {
     return {
-      apply: null,
-      applyState: null,
-      advice: null,
       columns,
       ordersList: [],
       queryParam: {
@@ -180,21 +165,24 @@ export default {
         open: true
       },
       postsLoading: false,
-      visible: false
+      order: null,
+      orderState: null,
+      visible: false,
+      advice: null
     }
   },
   mounted() {
     this.getLatestOrder()
-    applyApi.countOrder().then(response => {
+    heroApi.countHero().then(response => {
       this.total = response.data.data
       console.log(response.data)
       this.pageSizeOptions.push(response.data.data)
     })
   },
   methods: {
-    showModal(apply, state) {
-      this.apply = apply
-      this.applyState = state
+    showModal(order, state) {
+      this.order = order
+      this.orderState = state
       this.visible = true
     },
     handleCancel() {
@@ -204,7 +192,7 @@ export default {
       this.$print(this.$refs.print)
     },
     getLatestOrder() {
-      applyApi.getLatest().then(response => {
+      heroApi.getLatest().then(response => {
         this.ordersList = response.data.data
 
         let i = 0
@@ -218,7 +206,7 @@ export default {
       this.pagination.page = page
       this.pagination.size = pageSize
       this.postsLoading = true
-      applyApi.getLatest((page - 1) * pageSize, pageSize).then(response => {
+      heroApi.getLatest((page - 1) * pageSize, pageSize).then(response => {
         this.ordersList = response.data.data
 
         let i = 0
@@ -231,11 +219,11 @@ export default {
     handleQuery() {
       console.log(this.queryParam)
       this.postsLoading = false
-      console.log(this.queryParam.username, this.queryParam.datetime)
-      if (this.queryParam.username == null && this.queryParam.datetime == null) {
+      console.log(this.queryParam.username, this.queryParam.state, this.queryParam.datetime)
+      if (this.queryParam.username == null && this.queryParam.state == -1 && this.queryParam.datetime == null) {
         this.getLatestOrder()
       } else {
-        applyApi.queryOrder(this.queryParam.username, this.queryParam.datetime).then(response => {
+        heroApi.queryHero(this.queryParam.username, this.queryParam.state, this.queryParam.datetime).then(response => {
           this.ordersList = response.data.data
           let i = 0
           for (i; i < this.ordersList.length; i++) {
@@ -258,27 +246,27 @@ export default {
       this.queryParam.username = null
       this.queryParam.state = -1
     },
-    passOrder(apply, state) {
+    passOrder(order, state) {
       let message = state == 1 ? '订单审核通过' : '订单审核不通过'
       this.$message.loading({ content: 'Loading...' })
-      console.log(apply)
-      applyApi.passApply(apply.id, state).then(response => {
+      console.log(order)
+      heroApi.passHero(order.id, state).then(response => {
         if (response.data > 0) {
           this.$message.success(message, 5)
-          apply.state = state
+          order.state = state
         } else {
           this.$message.error('操作失败')
         }
       })
     },
-    refuseApply(apply, state, advice) {
-      let message = state == 1 ? '订单审核通过' : '订单审核不通过'
+    refuseOrder(order, orderState, advice) {
+      let message = orderState == 1 ? '订单审核通过' : '订单审核不通过'
       this.$message.loading({ content: 'Loading...' })
-      console.log(apply)
-      applyApi.refuseApply(apply.id, state, advice).then(response => {
+      console.log(order)
+      heroApi.refuseHero(order.id, orderState, advice).then(response => {
         if (response.data > 0) {
           this.$message.success(message, 5)
-          apply.state = state
+          order.state = orderState
         } else {
           this.$message.error('操作失败')
         }
@@ -287,7 +275,7 @@ export default {
     },
     deleteOrder(order) {
       this.$message.loading({ content: 'Loading...' })
-      applyApi.deleteOrder(order.id).then(response => {
+      heroApi.deleteHero(order.id).then(response => {
         console.log(response)
         if (response.data > 0) {
           this.$message.success('删除成功', 5)

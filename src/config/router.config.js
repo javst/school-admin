@@ -30,32 +30,32 @@ export const asyncRouterMap = [
         name: 'Posts',
         component: BlankLayout,
         redirect: '/posts/list',
-        meta: { title: '设备', icon: 'form' },
+        meta: { title: '器件', icon: 'form' },
         children: [
           {
             path: '/posts/list',
             name: 'PostList',
             component: () => import('@/views/post/PostList'),
-            meta: { title: '所有设备', hiddenHeaderContent: false }
+            meta: { title: '所有器件', hiddenHeaderContent: false }
           },
           {
             path: '/posts/inStock',
             name: 'InStock',
             component: () => import('@/views/post/InStock'),
-            meta: { title: '设备入库', hiddenHeaderContent: false, keepAlive: false }
+            meta: { title: '器件入库', hiddenHeaderContent: false, keepAlive: false }
           },
           {
             path: '/posts/write',
             name: 'PostWrite',
             component: () => import('@/views/post/PostEdit'),
-            meta: { title: '发布设备', hiddenHeaderContent: false, keepAlive: false }
+            meta: { title: '发布器件', hiddenHeaderContent: false, keepAlive: false }
           },
           {
             path: '/posts/edit',
             name: 'PostEdit',
             hidden: true,
             component: () => import('@/views/post/PostEdit'),
-            meta: { title: '编辑设备', hiddenHeaderContent: false, keepAlive: false }
+            meta: { title: '编辑器件', hiddenHeaderContent: false, keepAlive: false }
           },
           {
             path: '/categories',
@@ -197,6 +197,12 @@ export const asyncRouterMap = [
             name: 'apply',
             component: () => import('@/views/report/Apply'),
             meta: { title: '竞赛申购', hiddenHeaderContent: false }
+          },
+          {
+            path: '/report/Hero.vue',
+            name: 'hero',
+            component: () => import('@/views/report/Hero'),
+            meta: { title: '荣誉额度', hiddenHeaderContent: false }
           }
         ]
       },
