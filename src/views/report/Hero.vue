@@ -41,6 +41,19 @@
         </a-form>
       </div>
 
+      <div>
+        <a-modal
+          title="证书图片"
+          :visible="image"
+          :confirm-loading="confirmLoading"
+          @ok="handleCancel"
+          @cancel="handleCancel"
+        >
+          <p><img :src="scr" /></p>
+        </a-modal>
+      </div>
+      <!--      证书图片框-->
+
       <a-table
         ref="print"
         bordered
@@ -51,6 +64,11 @@
       >
         <a slot="username" slot-scope="text">{{ text }}</a>
         <span slot="username"><a-icon type="smile-o" /> 姓名</span>
+        <span slot="image" slot-scope="scr">
+          <a-tag @click="showImage(scr)">
+            点击查看
+          </a-tag>
+        </span>
         <span slot="states" slot-scope="state">
           <a-tag :color="state == 0 ? 'volcano' : state == 1 ? 'green' : 'geekblue'">
             {{ state == 0 ? '待审核' : state == 1 ? '已通过' : '未通过' }}
@@ -113,7 +131,7 @@ const columns = [
     scopedSlots: { customRender: 'username' }
   },
   {
-    title: '证书名',
+    title: '证书照片',
     dataIndex: 'title',
     key: 'title'
   },
@@ -121,6 +139,12 @@ const columns = [
     title: '申请额度',
     dataIndex: 'money',
     key: 'money'
+  },
+  {
+    title: '证书名',
+    key: 'image',
+    dataIndex: 'image',
+    scopedSlots: { customRender: 'image' }
   },
   {
     title: '状态',
@@ -168,7 +192,9 @@ export default {
       order: null,
       orderState: null,
       visible: false,
-      advice: null
+      advice: null,
+      image: false,
+      scr: null
     }
   },
   mounted() {
@@ -180,6 +206,10 @@ export default {
     })
   },
   methods: {
+    showImage(scr) {
+      this.image = true
+      this.scr = scr
+    },
     showModal(order, state) {
       this.order = order
       this.orderState = state
@@ -187,6 +217,7 @@ export default {
     },
     handleCancel() {
       this.visible = false
+      this.image = false
     },
     printOrder() {
       this.$print(this.$refs.print)
